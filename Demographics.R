@@ -4,7 +4,7 @@
 
 rm(list = ls())
 
-install.packages(c("tidyverse", "survey", "foreign", "data.table", "plyr", "dplyr", "magrittr", "ggplot2", "reshape2", "readr", "xlsx"))
+#install.packages(c("tidyverse", "survey", "foreign", "data.table", "plyr", "dplyr", "magrittr", "ggplot2", "reshape2", "readr", "xlsx"))
 
 library(dplyr)
 library(magrittr)
@@ -21,7 +21,7 @@ options(scipen = 999)  # disable scientific notation in R
 
 options(survey.lonely.psu = "adjust")
 
-setwd("C:/Users/weny/Google Drive/2018/Humanitarian/Summer Workshops/WCARO/Data/1- Population and Fertility")
+setwd("C:/Users/Kathrin Weny/Documents/")
 
 # Read in data and select Burkina Faso 2014 data points -------------------
 
