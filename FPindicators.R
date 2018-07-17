@@ -21,11 +21,11 @@ rm(list = ls())
 
 #options(survey.lonely.psu = "adjust")
 
-setwd("C:/Users/weny/Google Drive/2018/Humanitarian/Summer Workshops/WCARO/Data/2- Sexual and Reproductive Health")
+setwd("C:/Users/Kathrin Weny/Documents/")
 
 # Read in survey data -----------------------------------------------------
 
-raw_data          <- read.spss("./BFIR62FL.SAV", to.data.frame = TRUE) 
+raw_data          <- read.spss("./Household survey data/BFIR62FL.SAV", to.data.frame = TRUE) 
 a <- as.data.frame(attr(raw_data, "variable.labels"))
 
 raw_data <- raw_data %>%
