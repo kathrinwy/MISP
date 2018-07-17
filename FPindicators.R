@@ -40,50 +40,38 @@ survey <- svydesign(id      = raw_data$V021,         # Primary sampling
                     weights = raw_data$V005/1000000, # HH sample weight
                     data    = raw_data)               # Data
 
-# estimate share of sex/age groups by region
-national <- as.data.frame(svymean(~V312, survey)%>% prop.table(1))
 
-svytable(~V024+V312, survey)
 
-svyby(~V024+V312,survey, svymean)
+# Method mix --------------------------------------------------------------
 
-b <- as.data.frame(svytable(~V024, ~V313, survey))
+
+# national level
 svymean(~V312, survey)
-method <- c <- as.data.frame(svyby(~V024, ~V312, survey, svymean))
 
-%>% prop.table(1))
-names(method) <- c("region", "method", "proportion")
 
-type   <- as.data.frame(svytable(~V024+V313, survey)%>% prop.table(2))
-names(type) <- c("region", "type", "proportion")
+# estimate share of sex/age groups by region
+output <- as.data.frame(svyby(~V312, ~V024,  survey, svymean))
 
-# calculate population numbers per region ---------------------------------
+output <- output[2:19]
 
-full_data <- full_data %>%
-  mutate(regional_population = as.numeric(percentage)*as.numeric(national_population)) 
+names(output) <- substring(names(output), 5)
 
-WRA <- full_data %>%
-  select(age, sex, region, regional_population) %>%
-  filter(sex == "Female" & (15 <= as.numeric(as.character(age)) & as.numeric(as.character(age)) < 50)) 
-
-WRA <- WRA %>%
-  arrange(region) %>%
-  mutate(running.sum.regional_population = cumsum(regional_population)) %>%
-  select(region, running.sum.regional_population)%>%
-  group_by(region)%>%
-  summarize(target=last(running.sum.regional_population))%>%
-  select(c("region", "target"))
-
-names(WRA) <- c("region", "WRA, in '000")
-
-write.xlsx(WRA, "./Results/Data/women_repr_age.xlsx")
-write.xlsx(full_data, "./Results/Data/subnational_population_data.xlsx")
+write.xlsx(WRA, "./Results/method_mix.xlsx")
 
 
 
+# Type of method ----------------------------------------------------------
 
 
+# national level
+svymean(~V313, survey)
 
 
+# estimate share of sex/age groups by region
+output <- as.data.frame(svyby(~V313, ~V024,  survey, svymean))
 
+output <- output[2:5]
 
+names(output) <- substring(names(output), 5)
+
+write.xlsx(WRA, "./Results/type_of_FP_method.xlsx")
