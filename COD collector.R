@@ -2,6 +2,46 @@ library(rvest)
 library(xml2)
 library(stringr)
 options(warn=-1)
+
+
+# define a function that 'clean country name'(ccn), e.g. ccn("Côte d'Ivoire")
+ccn=function(string){
+  # remove non-alphabetic
+  string=str_replace_all(string, "[[:punct:]]", " ")
+  # remove Latin letters
+  return(iconv(string,from="UTF-8", to='ASCII//TRANSLIT'))}
+
+# build a country list from https://www.unfpa.org/worldwide
+country_list=c('Angola','Botswana','Burundi','Comoros','Democratic Republic of the Congo',
+               'Eritrea','Eswatini','Ethiopia','Kenya','Lesotho','Madagascar','Malawi','Mozambique',
+               'Namibia','Rwanda','Seychelles','South Africa','South Sudan',
+               'United Republic of Tanzania','Uganda','Zambia','Zimbabwe','Benin','Burkina Faso',
+               'Republic of Cameroon','Cabo Verde','Central African Republic','Chad',
+               'Republic of Congo','Cote d Ivoire','Equatorial Guinea','Gabon','Gambia','Ghana',
+               'Guinea','Guinea-Bissau','Liberia','Mali','Mauritania','Niger','Nigeria',
+               'Sao Tome and Principe','Senegal','Sierra Leone','Togo','Algeria','Djibouti',
+               'Egypt','Kingdom of Bahrain','Kingdom of Saudi Arabia','State of Kuwait',
+               'State of Qatar','United Arab Emirates','Sultanate of Oman','Iraq','Jordan','Lebanon',
+               'Libyan Arab Jamahiriya','Morocco','State of Palestine','Somalia','Sudan',
+               'Syrian Arab Republic','Tunisia','Yemen','Afghanistan','Bangladesh','Bhutan',
+               'Cambodia','China','Democratic Peoples Republic of Korea','India','Indonesia',
+               'Islamic Republic of Iran','Lao People s Democratic Republic','Malaysia','Maldives',
+               'Mongolia','Myanmar','Nepal','Cook Islands','Federated States of Micronesia',
+               'Fiji','Kiribati','Marshall Islands','Nauru','Niue','Palau','Samoa',
+               'Solomon Islands','Tokelau','Tonga','Tuvalu and Vanuatu','Pakistan',
+               'Papua New Guinea','Philippines','Sri Lanka','Thailand','Timor-Leste','Viet Nam',
+               'Albania','Armenia','Azerbaijan','Belarus','Bosnia & Herzegovina','Georgia',
+               'Kazakhstan','Kosovo','Kyrgyzstan','Macedonia','Moldova','Serbia','Tajikistan',
+               'Turkey','Turkmenistan','Ukraine','Uzbekistan','Argentina','Bolivia','Brazil',
+               ' Belize','Guyana','Saint Lucia','Jamaica','Suriname','Trinidad and Tobago',
+               'Anguilla','Antigua and Barbuda','Aruba','Bahamas','Barbados','Bermuda',
+               'British Virgin Islands','Cayman Islands','Dominica','Grenada','Montserrat',
+               'Netherlands Antilles','Saint Kitts and Nevis','Saint Vincent and the Grenadines',
+               'Turks and Caicos Islands','Chile','Colombia','Costa Rica','Cuba',
+               'Dominican Republic','Ecuador','El Salvador','Guatemala','Haiti','Honduras','Mexico',
+               'Nicaragua','Panama','Paraguay','Peru','Uruguay','Venezuela')
+
+
 ###### current criteria: subnational and contains 'population', format csv,xls,xlsx
 
 start_time = Sys.time()
@@ -77,7 +117,7 @@ while (page_empty==0){
               all_location = c(all_location,loc)
               all_desc = c(all_desc,html_text(desc))
               all_address=c(all_address,paste0("https://data.humdata.org",address0[i]))
-              download.file(addr,quiet = 1,destfile = paste0("E:/File/Pennsylvania/UNFPA/data/",loc,'_',clean_date,'.',style))
+              download.file(addr,quiet = 1,destfile = paste0("E:/File/Pennsylvania/UNFPA/data/",loc,'_',clean_date,'.',style),mode = "wb")
             }
           }
         }
@@ -89,47 +129,13 @@ print(paste0('COD data processing takes ',round(Sys.time()-start_time,2),' minut
 
 
 
-# define a function that 'clean country name'(ccn), e.g. ccn("Côte d'Ivoire")
-ccn=function(string){
-  # remove non-alphabetic
-  string=str_replace_all(string, "[[:punct:]]", " ")
-  # remove Latin letters
-  return(iconv(string,from="UTF-8", to='ASCII//TRANSLIT'))}
 
 
 
 directory=data.frame(country=all_location,year=all_date,decription=all_desc,link=all_address,stringsAsFactors=FALSE)
 
+###################
 
 
-# build a country list from https://www.unfpa.org/worldwide
-country_list=c('Angola','Botswana','Burundi','Comoros','Democratic Republic of the Congo',
-               'Eritrea','Eswatini','Ethiopia','Kenya','Lesotho','Madagascar','Malawi','Mozambique',
-               'Namibia','Rwanda','Seychelles','South Africa','South Sudan',
-               'United Republic of Tanzania','Uganda','Zambia','Zimbabwe','Benin','Burkina Faso',
-               'Republic of Cameroon','Cabo Verde','Central African Republic','Chad',
-               'Republic of Congo','Cote d Ivoire','Equatorial Guinea','Gabon','Gambia','Ghana',
-               'Guinea','Guinea-Bissau','Liberia','Mali','Mauritania','Niger','Nigeria',
-               'Sao Tome and Principe','Senegal','Sierra Leone','Togo','Algeria','Djibouti',
-               'Egypt','Kingdom of Bahrain','Kingdom of Saudi Arabia','State of Kuwait',
-               'State of Qatar','United Arab Emirates','Sultanate of Oman','Iraq','Jordan','Lebanon',
-               'Libyan Arab Jamahiriya','Morocco','State of Palestine','Somalia','Sudan',
-               'Syrian Arab Republic','Tunisia','Yemen','Afghanistan','Bangladesh','Bhutan',
-               'Cambodia','China','Democratic Peoples Republic of Korea','India','Indonesia',
-               'Islamic Republic of Iran','Lao People s Democratic Republic','Malaysia','Maldives',
-               'Mongolia','Myanmar','Nepal','Cook Islands','Federated States of Micronesia',
-               'Fiji','Kiribati','Marshall Islands','Nauru','Niue','Palau','Samoa',
-               'Solomon Islands','Tokelau','Tonga','Tuvalu and Vanuatu','Pakistan',
-               'Papua New Guinea','Philippines','Sri Lanka','Thailand','Timor-Leste','Viet Nam',
-               'Albania','Armenia','Azerbaijan','Belarus','Bosnia & Herzegovina','Georgia',
-               'Kazakhstan','Kosovo','Kyrgyzstan','Macedonia','Moldova','Serbia','Tajikistan',
-               'Turkey','Turkmenistan','Ukraine','Uzbekistan','Argentina','Bolivia','Brazil',
-               ' Belize','Guyana','Saint Lucia','Jamaica','Suriname','Trinidad and Tobago',
-               'Anguilla','Antigua and Barbuda','Aruba','Bahamas','Barbados','Bermuda',
-               'British Virgin Islands','Cayman Islands','Dominica','Grenada','Montserrat',
-               'Netherlands Antilles','Saint Kitts and Nevis','Saint Vincent and the Grenadines',
-               'Turks and Caicos Islands','Chile','Colombia','Costa Rica','Cuba',
-               'Dominican Republic','Ecuador','El Salvador','Guatemala','Haiti','Honduras','Mexico',
-               'Nicaragua','Panama','Paraguay','Peru','Uruguay','Venezuela')
 
 
