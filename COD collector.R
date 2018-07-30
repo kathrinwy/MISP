@@ -3,6 +3,8 @@ library(xml2)
 library(stringr)
 options(warn=-1)
 
+# where to save the downloads
+working_directory="E:/File/Pennsylvania/UNFPA/"
 
 # define a function that 'clean country name'(ccn), e.g. ccn("Côte d'Ivoire")
 ccn=function(string){
@@ -104,7 +106,7 @@ while (page_empty==0){
       # extract the file style if '.' exists
       if (grepl('[.]',address)){
         style=tail(strsplit(address,'[.]')[[1]],1)
-        # examine whether style is (csv),xls,xlsx (prefix criterion is not strict)
+        # examine whether style is (csv),xls,xlsx (prefix criterion is not accurate)
         if (style=='xls' || style=='xlsx'){
           loc=ccn(html_text(loca))
           # examine whether location is in country list
@@ -113,14 +115,14 @@ while (page_empty==0){
           } else{
             # there are two unusual cases: no date or has a period instead of single date
             date=html_text(year)
-            # first examine non-empty date
+            
             if (nchar(date)>=12){
               clean_date=str_sub(date,-12)
               all_date = c(all_date,clean_date)
               all_location = c(all_location,loc)
               all_desc = c(all_desc,html_text(desc))
               all_address=c(all_address,paste0("https://data.humdata.org",address0[i]))
-              address_curr=paste0("E:/File/Pennsylvania/UNFPA/data/",loc,'_',clean_date,'.',style)
+              address_curr=paste0(working_directory,'data/',loc,'_',clean_date,'.',style)
               all_local_address=c(all_local_address,address_curr)
               download.file(addr,quiet = 1,destfile = address_curr,mode = "wb")
             }
@@ -138,6 +140,40 @@ print(paste0('COD data processing takes ',round(Sys.time()-start_time,2),' minut
 
 
 directory=data.frame(country=all_location,year=all_date,decription=all_desc,link=all_address,location=all_local_address,stringsAsFactors=FALSE)
+
+############ find country unique to most recent date
+as_date=function(string){
+  # we assume the date is like Sep 01,2011
+  temp=strsplit(string,',| ')[[1]]
+  year=temp[4]
+  day=temp[2]
+  month=match(temp[1],c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'))
+  return(as.POSIXct(paste0(year,'/',month,'/',day)))
+}
+
+unique_row=c()
+unique_country=c()
+unique_date=c()
+for (i in 1:dim(directory)[1]){
+  if (!directory[i,'country'] %in% unique_country){
+    unique_row=c(unique_row,i)
+    unique_country=c(unique_country,directory[i,'country'])
+    unique_date=c(unique_date,as.character(as_date(directory[i,'year'])))
+    print(as_date(directory[i,'year']))
+  } else{
+    # compare which date is more recent, replace if necessary
+    temp_index=match(directory[i,'country'],unique_country)
+    included_date=unique_date[temp_index]
+    to_compare_date=as.character(as_date(directory[i,'year']))
+    if (to_compare_date>included_date){
+      unique_row[temp_index]=i
+      unique_country[temp_index]=directory[i,'country']
+      unique_date[temp_index]=to_compare_date
+    }
+  }
+}
+
+directory_unique=directory[unique_row,]
 
 ###################
 library(readxl)
@@ -293,45 +329,13 @@ judge_each_DT=function(address){
 }
 
 
-############ find country unique to most recent date
-as_date=function(string){
-  # we assume the date is like Sep 01,2011
-  temp=strsplit(string,',| ')[[1]]
-  year=temp[4]
-  day=temp[2]
-  month=match(temp[1],c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'))
-  return(as.POSIXct(paste0(year,'/',month,'/',day)))
-}
 
-unique_row=c()
-unique_country=c()
-unique_date=c()
-for (i in 1:dim(directory)[1]){
-  if (!directory[i,'country'] %in% unique_country){
-    unique_row=c(unique_row,i)
-    unique_country=c(unique_country,directory[i,'country'])
-    unique_date=c(unique_date,as.character(as_date(directory[i,'year'])))
-    print(as_date(directory[i,'year']))
-  } else{
-    # compare which date is more recent, replace if necessary
-    temp_index=match(directory[i,'country'],unique_country)
-    included_date=unique_date[temp_index]
-    to_compare_date=as.character(as_date(directory[i,'year']))
-    if (to_compare_date>included_date){
-      unique_row[temp_index]=i
-      unique_country[temp_index]=directory[i,'country']
-      unique_date[temp_index]=to_compare_date
-    }
-  }
-}
-
-directory_unique=directory[unique_row,]
 ############ save all uniformly-format data
 for (i in 1:dim(directory_unique)[1]){
   print(paste0('processing',directory_unique[i,'location']))
   answer=judge_each_DT(directory_unique[i,'location'])
   if (class(answer)!='character'){
-  write.csv(answer,paste0('E:/File/Pennsylvania/UNFPA/uniform/',directory_unique[i,'country'],
+  write.csv(answer,paste0(working_directory,'uniform/',directory_unique[i,'country'],
                           '_',directory_unique[i,'year'],'.csv'))
   }
 }
