@@ -1,10 +1,12 @@
 library(rvest)
 library(xml2)
+install.packages("stringr", type="source")
 library(stringr)
+library(textreadr) 
 options(warn=-1)
 
 # where to save the downloads
-working_directory="E:/File/Pennsylvania/UNFPA/"
+working_directory="C:/Users/weny/Google Drive/2018/Humanitarian/MISP/HDX data/"
 
 # define a function that 'clean country name'(ccn), e.g. ccn("Côte d'Ivoire")
 ccn=function(string){
