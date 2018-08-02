@@ -78,8 +78,14 @@ for(country in country_list){
 # Import the data catalogue from MICS and add to data availability from DHS
 
 mics <- read_csv("C:/Users/weny/Google Drive/2018/Humanitarian/MISP/MISP-Rproject/surveys_catalogue_mics.csv") %>%
-        select(c("country", "year_latest")) %>%
+        filter(status == "Completed" & datasets == "Available") %>%
+        select(c("country", "year")) %>%
         mutate(survey = "mics")
+
+mics$year_latest <- substr(mics$year, (nchar(as.character(mics$year)) + 1)-4, nchar(as.character(mics$year)))
+
+mics <- mics %>%
+  select(-year)
 
 data_availability <- rbind(dhs, mics)
 
@@ -91,11 +97,11 @@ latest_dataset <- data_availability %>%
  
 # surveys to be downloaded manually ---------------------------------------
 
-mics <- latest_dataset %>%
-        filter(survey == "mics")
+mics_latest <- latest_dataset %>%
+               filter(survey == "mics")
 
-dhs  <- latest_dataset %>%
-        filter(survey == "dhs")
+dhs_latest  <- latest_dataset %>%
+              filter(survey == "dhs")
 
 
 
