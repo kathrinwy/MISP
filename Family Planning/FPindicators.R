@@ -11,8 +11,6 @@
 
 rm(list = ls())
 
-#install.packages(c("tidyverse", "survey", "foreign", "data.table", "plyr", "dplyr", "magrittr", "ggplot2", "reshape2", "readr", "xlsx"))
-
 library(dplyr)
 library(magrittr)
 library(tidyverse)
