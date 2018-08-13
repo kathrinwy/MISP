@@ -25,23 +25,11 @@ source("COD_extract.R")
 # calculates number of people and percentage of women of reproductive age at lowest disaggregation level
 # available (only a matter of filtering the data and combining 0-4, ... 45-49 to WRA)
 
+
+
 # 2. Iteration
 
-# If there is no existing COD-PS, the share of women of reproductive age and the population affected 
-# if no additional context specific information is available - should come from IPUMS data set if it 
-# is not older than 10 years
-
-source("IPUMS_collector.R")
-# goes through the dataset hosted by UNFPA and filters country specific datasets from the last 10 years
-# note, the data are hosted on our surver as they have to be 
-
-source("IPUMS_extract.R")
-# calculates number of people and percentage of women of reproductive age at lowest disaggregation level
-# available 
-
-# 3. Iteration
-
-# If no IPUMS data set is availalbe for the last 10 years, the next best solution is to combine WPP
+# If no COS-PS is availalbe, the next best solution is to combine WPP
 # and the latest available household survey in order to estimate ADMIN level 1 disaggregations
 
 source("survey_collector.R")
@@ -65,7 +53,7 @@ source("combine_wpp_survey.R")
 # multiply outcome of survey_extract with wpp_extract to obtain share of WRA by Admin level 1 and 
 # total population by Admin level 1
 
-# 4. Iteration
+# 3. Iteration
 
 # This step consists in using wpp_extract output
 
