@@ -6,10 +6,9 @@
 ####
 ####    Decision-tree:
 ####
-####    1. Iteration: COD-PS
-####                 ->  2. Iteration: IPUMS sample sruvey data
-####                                  -> 3. Iteration: HH survey/wpp estimate (AB1)
-####                                                  -> 4. Iteration: wpp (AB0)
+####    1. Iteration: COD-PS (lowest AB available)
+####            -> 2. Iteration: HH survey/wpp estimate (AB1)
+####                      -> 3. Iteration: wPP (AB0)
 ####
 ####---------------------------------------------------------------------------------------------
 
@@ -24,7 +23,6 @@ source("COD_collector.R")
 source("COD_extract.R")
 # calculates number of people and percentage of women of reproductive age at lowest disaggregation level
 # available (only a matter of filtering the data and combining 0-4, ... 45-49 to WRA)
-
 
 
 # 2. Iteration
@@ -57,8 +55,32 @@ source("combine_wpp_survey.R")
 
 # This step consists in using wpp_extract output
 
+# Fertiltiy indicators --------------------------------------------------------------------------
 
-# Fertility indicators ----------------------------------------------------
+####---------------------------------------------------------------------------------------------
+####
+####    Decision-tree:
+####
+####    1. Iteration: Latest household survey (AB1)
+####                 ->  2. Iteration: World contraceptive use (AB0)
+####
+####---------------------------------------------------------------------------------------------
+
+# 1. Iteration
+
+source("survey_wm_extract.R")
+# loads women questionnaire files 
+# extracts the crude birth rate (cbr) by AB1
+
+# 2. Iteration
+source("wpp_cbr.R")
+# loads crude birth rate (cbr) 
+
+source("wcu_cbr_extract.R")
+# extract crude birth (cbr) by country
+
+
+# Family planning indicators --------------------------------------------------------------------
 
 ####---------------------------------------------------------------------------------------------
 ####
