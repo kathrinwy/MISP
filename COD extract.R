@@ -32,18 +32,32 @@ for(i in 1:length(listfiles)){
   countries[i]  <- str_extract(listfiles[i], ".+?(?=_)")
 }
 
+# Extract indicators
+
+df <- data.frame(matrix(ncol = 6, nrow = 0))
+names(df) <- c("country", "year", "admin.level", "admin.name", "wra", "total.population")
 
 for(i in 1:length(countries)){
   
   # read in data
-  
-  tmp <- read.csv(listfiles[i]) %>%
+    tmp <- read.csv(listfiles[i])
     
+  # Total population per admin boundary
   
+    # to be written when final file structure ready
+    
   # Percentage of women of reproductive age
-
-  # Total population
+    
+    # to be written when final file structure ready
+    
+  # others columns
+    
+    tmp <- tmp %>%
+      mutate(country = countries[i]) %>%
+      mutate(year = substr(listfiles[i], nchar(listfiles[i])-7,  nchar(listfiles[i])-4))
 }
+
+
 
 
 
