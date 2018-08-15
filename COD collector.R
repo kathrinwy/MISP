@@ -1,6 +1,5 @@
 library(rvest)
 library(xml2)
-install.packages("stringr", type="source")
 library(stringr)
 library(textreadr) 
 options(warn=-1)

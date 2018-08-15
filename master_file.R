@@ -105,7 +105,6 @@ source("wcu_collector.R")
 source("wcu_extract.R")
 # extract modern contraceptive use by country for the current years
 
-
 # Combine output ----------------------------------------------------------
 
 source("combine_add_export.R")
