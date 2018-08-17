@@ -1,13 +1,12 @@
 library(rvest)
 library(xml2)
 library(stringr)
-library(textreadr) 
 options(warn=-1)
 
-# where to save the downloads
-working_directory="C:/Users/weny/Google Drive/2018/Humanitarian/MISP/HDX data/"
+# where to save the downloads, this is the only thing to set up
+working_directory="E:/File/Pennsylvania/UNFPA/"
 
-# define a function that 'clean country name'(ccn), e.g. ccn("Côte d'Ivoire")
+# define a function that 'clean country name'(ccn), e.g. ccn("Côte d'Ivoire")='Cote d Ivoire'
 ccn=function(string){
   # remove non-alphabetic
   string=str_replace_all(string, "[[:punct:]]", " ")
@@ -46,7 +45,6 @@ country_list=c('Angola','Botswana','Burundi','Comoros','Democratic Republic of t
 
 
 ###### current criteria: subnational and contains 'population', format (csv),xls,xlsx
-
 start_time = Sys.time()
 #initializing
 pagenumber=1
@@ -125,7 +123,7 @@ while (page_empty==0){
               all_address=c(all_address,paste0("https://data.humdata.org",address0[i]))
               address_curr=paste0(working_directory,'data/',loc,'_',clean_date,'.',style)
               all_local_address=c(all_local_address,address_curr)
-              download.file(addr,quiet = 1,destfile = address_curr,mode = "wb")
+              #download.file(addr,quiet = 1,destfile = address_curr,mode = "wb")
             }
           }
         }
@@ -136,10 +134,9 @@ while (page_empty==0){
 print(paste0('COD data processing takes ',round(Sys.time()-start_time,2),' minutes'))
 
 
-
-
-
-
+# the details of all data downloaded are recorded in a dataframe; 
+# this directory has repeated country names; 
+# refer to directory variable 'directory_unique' to see which country is done
 directory=data.frame(country=all_location,year=all_date,decription=all_desc,link=all_address,location=all_local_address,stringsAsFactors=FALSE)
 
 ############ find country unique to most recent date
@@ -174,9 +171,10 @@ for (i in 1:dim(directory)[1]){
   }
 }
 
+# dataframe records which country is under consideration for info extraction
 directory_unique=directory[unique_row,]
 
-###################
+################### start to extract disaggregation from highest admin level
 library(readxl)
 
 # define a function that return the index in a list where all strings in first statement can be found
@@ -193,94 +191,150 @@ find_index=function(str_vec,list_to_look){
 
 
 
-
+##### evaluate level 2, if not qualified, go to level 1
 extract_level2=function(data2,contain_2){
   # create an abbreviation
   col2=colnames(data2)
   
-  if (find_index('male',col2)!=0 & find_index('female',col2)!=0){
+  if (find_index(c('male',4),col2)!=0 & find_index(c('female',4),col2)!=0){
+    # c('male','4') finds a column name that contains male and 4-yr old, i.e. both sex/age disaggregation
     
-    # if a data has disaggregated data and admin level 2, it has two rows that should not read as data
-    # my thought is to combine two rows
-    for (i in 1:length(col2)){
-      col2[i]=paste0(col2[i],'____',data2[1,i])
-    }
-    colnames(data2)=col2
-    data2=data2[2:dim(data2)[1],]
-    
+    # extract each column
     admin1_name=find_index(c('Admin1','name'),col2)
     admin2_name=find_index(c('Admin2','name'),col2)
     male=find_index(c('Male'),col2)
     female=find_index(c('Female'),col2)
-    age0_4=find_index(c('0','4'),col2)
-    age5_9=find_index(c('5','9'),col2)
-    age10_14=find_index(c('10','14'),col2)
-    age15_19=find_index(c('15','19'),col2)
-    age20_24=find_index(c('20','24'),col2)
-    age25_29=find_index(c('25','29'),col2)
-    age30_34=find_index(c('30','34'),col2)
-    age35_39=find_index(c('35','39'),col2)
-    age40_44=find_index(c('40','44'),col2)
-    age45_49=find_index(c('45','49'),col2)
-    age50_54=find_index(c('50','54'),col2)
-    age55_59=find_index(c('55','59'),col2)
-    age60_64=find_index(c('60','64'),col2)
-    age65_69=find_index(c('65','69'),col2)
-    age70_74=find_index(c('70','74'),col2)
-    age75_79=find_index(c('75','79'),col2)
-    age80_=find_index(c('80'),col2)
+    m_age0_4=find_index(c('male','4'),col2)
+    m_age5_9=find_index(c('male','5','9'),col2)
+    m_age10_14=find_index(c('male','10','14'),col2)
+    m_age15_19=find_index(c('male','15','19'),col2)
+    m_age20_24=find_index(c('male','20','24'),col2)
+    m_age25_29=find_index(c('male','25','29'),col2)
+    m_age30_34=find_index(c('male','30','34'),col2)
+    m_age35_39=find_index(c('male','35','39'),col2)
+    m_age40_44=find_index(c('male','40','44'),col2)
+    m_age45_49=find_index(c('male','45','49'),col2)
+    m_age50_54=find_index(c('male','50','54'),col2)
+    m_age55_59=find_index(c('male','55','59'),col2)
+    m_age60_64=find_index(c('male','60','64'),col2)
+    m_age65_69=find_index(c('male','65','69'),col2)
+    m_age70_74=find_index(c('male','70','74'),col2)
+    m_age75_79=find_index(c('male','75','79'),col2)
+    m_age80_=find_index(c('male','80'),col2)
     
-    extracted=data2[,c(admin1_name,admin2_name,male,female,age0_4,age5_9,age10_14,age15_19,age20_24,
-                       age25_29,age30_34,age35_39,age40_44,age45_49,age50_54,age55_59,age60_64,age65_69,
-                       age70_74,age75_79,age80_)]
-    colnames(extracted)=c('Admin1','Admin2','Male','Female','0-4','5-9','10-14','15-19','20-24','25-29','30-34',
-                          '35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74','75-79','80+')
+    f_age0_4=find_index(c('female','4'),col2)
+    f_age5_9=find_index(c('female','5','9'),col2)
+    f_age10_14=find_index(c('female','10','14'),col2)
+    f_age15_19=find_index(c('female','15','19'),col2)
+    f_age20_24=find_index(c('female','20','24'),col2)
+    f_age25_29=find_index(c('female','25','29'),col2)
+    f_age30_34=find_index(c('female','30','34'),col2)
+    f_age35_39=find_index(c('female','35','39'),col2)
+    f_age40_44=find_index(c('female','40','44'),col2)
+    f_age45_49=find_index(c('female','45','49'),col2)
+    f_age50_54=find_index(c('female','50','54'),col2)
+    f_age55_59=find_index(c('female','55','59'),col2)
+    f_age60_64=find_index(c('female','60','64'),col2)
+    f_age65_69=find_index(c('female','65','69'),col2)
+    f_age70_74=find_index(c('female','70','74'),col2)
+    f_age75_79=find_index(c('female','75','79'),col2)
+    f_age80_=find_index(c('female','80'),col2)
+    
+    # compile into a new dataframe
+    extracted=data2[,c(admin1_name,admin2_name,male,female,m_age0_4,m_age5_9,m_age10_14,m_age15_19,
+                       m_age20_24,m_age25_29,m_age30_34,m_age35_39,m_age40_44,m_age45_49,m_age50_54,
+                       m_age55_59,m_age60_64,m_age65_69,m_age70_74,m_age75_79,m_age80_,
+                       f_age0_4,f_age5_9,f_age10_14,f_age15_19,f_age20_24,f_age25_29,f_age30_34,
+                       f_age35_39,f_age40_44,f_age45_49,f_age50_54,f_age55_59,f_age60_64,
+                       f_age65_69,f_age70_74,f_age75_79,f_age80_)]
+    colnames(extracted)=c('Admin1','Admin2','Male','Female','male 0-4','male 5-9','male 10-14',
+                          'male 15-19','male 20-24','male 25-29','male 30-34','male 35-39',
+                          'male 40-44','male 45-49','male 50-54','male 55-59','male 60-64',
+                          'male 65-69','male 70-74','male 75-79','male 80+','female 0-4',
+                          'female 5-9','female 10-14','female 15-19','female 20-24',
+                          'female 25-29','female 30-34','female 35-39','female 40-44',
+                          'female 45-49','female 50-54','female 55-59','female 60-64',
+                          'female 65-69','female 70-74','female 75-79','female 80+')
     
     return(list(extracted,contain_2))
   }else{
+    # if admin level 2 does not qualify, indicate this by making contain_2=0
     contain_2=0
-    print('This data has level 2 data but not about sex')
+    print('This data has level 2 data but not about sex AND age disaggregation')
     return(list(data2,contain_2))
   }}
 
+##### evaluate level 1
 extract_level1=function(data1,contain_1){
   # create an abbreviation
   col1=colnames(data1)
   
-  if (find_index('male',col1)!=0 & find_index('female',col1)!=0){
-    
+  if (find_index(c('male',4),col1)!=0 & find_index(c('female',4),col1)!=0){
     
     admin1_name=find_index(c('Admin1','name'),col1)
     male=find_index(c('Male'),col1)
     female=find_index(c('Female'),col1)
-    age0_4=find_index(c('4'),col1)
-    age5_9=find_index(c('5','9'),col1)
-    age10_14=find_index(c('10','14'),col1)
-    age15_19=find_index(c('15','19'),col1)
-    age20_24=find_index(c('20','24'),col1)
-    age25_29=find_index(c('25','29'),col1)
-    age30_34=find_index(c('30','34'),col1)
-    age35_39=find_index(c('35','39'),col1)
-    age40_44=find_index(c('40','44'),col1)
-    age45_49=find_index(c('45','49'),col1)
-    age50_54=find_index(c('50','54'),col1)
-    age55_59=find_index(c('55','59'),col1)
-    age60_64=find_index(c('60','64'),col1)
-    age65_69=find_index(c('65','69'),col1)
-    age70_74=find_index(c('70','74'),col1)
-    age75_79=find_index(c('75','79'),col1)
-    age80_84=find_index(c('80','84'),col1)
-    age85_89=find_index(c('85','89'),col1)
-    age90_94=find_index(c('90','94'),col1)
-    age95_99=find_index(c('95','99'),col1)
-    age100_=find_index(c('100'),col1)
+    m_age0_4=find_index(c('male','4'),col1)
+    m_age5_9=find_index(c('male','5','9'),col1)
+    m_age10_14=find_index(c('male','10','14'),col1)
+    m_age15_19=find_index(c('male','15','19'),col1)
+    m_age20_24=find_index(c('male','20','24'),col1)
+    m_age25_29=find_index(c('male','25','29'),col1)
+    m_age30_34=find_index(c('male','30','34'),col1)
+    m_age35_39=find_index(c('male','35','39'),col1)
+    m_age40_44=find_index(c('male','40','44'),col1)
+    m_age45_49=find_index(c('male','45','49'),col1)
+    m_age50_54=find_index(c('male','50','54'),col1)
+    m_age55_59=find_index(c('male','55','59'),col1)
+    m_age60_64=find_index(c('male','60','64'),col1)
+    m_age65_69=find_index(c('male','65','69'),col1)
+    m_age70_74=find_index(c('male','70','74'),col1)
+    m_age75_79=find_index(c('male','75','79'),col1)
+    m_age80_84=find_index(c('male','80','84'),col1)
+    m_age85_89=find_index(c('male','85','89'),col1)
+    m_age90_94=find_index(c('male','90','94'),col1)
+    m_age95_99=find_index(c('male','95','99'),col1)
+    m_age100_=find_index(c('male','100'),col1)
+    f_age0_4=find_index(c('female','4'),col1)
+    f_age5_9=find_index(c('female','5','9'),col1)
+    f_age10_14=find_index(c('female','10','14'),col1)
+    f_age15_19=find_index(c('female','15','19'),col1)
+    f_age20_24=find_index(c('female','20','24'),col1)
+    f_age25_29=find_index(c('female','25','29'),col1)
+    f_age30_34=find_index(c('female','30','34'),col1)
+    f_age35_39=find_index(c('female','35','39'),col1)
+    f_age40_44=find_index(c('female','40','44'),col1)
+    f_age45_49=find_index(c('female','45','49'),col1)
+    f_age50_54=find_index(c('female','50','54'),col1)
+    f_age55_59=find_index(c('female','55','59'),col1)
+    f_age60_64=find_index(c('female','60','64'),col1)
+    f_age65_69=find_index(c('female','65','69'),col1)
+    f_age70_74=find_index(c('female','70','74'),col1)
+    f_age75_79=find_index(c('female','75','79'),col1)
+    f_age80_84=find_index(c('female','80','84'),col1)
+    f_age85_89=find_index(c('female','85','89'),col1)
+    f_age90_94=find_index(c('female','90','94'),col1)
+    f_age95_99=find_index(c('female','95','99'),col1)
+    f_age100_=find_index(c('female','100'),col1)
     
-    extracted=data1[,c(admin1_name,male,female,age0_4,age5_9,age10_14,age15_19,age20_24,
-                       age25_29,age30_34,age35_39,age40_44,age45_49,age50_54,age55_59,age60_64,age65_69,
-                       age70_74,age75_79,age80_84,age85_89,age90_94,age95_99,age100_)]
-    max_length_str=c('Admin1','Male','Female','0-4','5-9','10-14','15-19','20-24',
-                     '25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69',
-                     '70-74','75-79','80+','85+','90+','95+','100+')
+    
+    extracted=data1[,c(admin1_name,male,female,m_age0_4,m_age5_9,m_age10_14,m_age15_19,m_age20_24,
+                       m_age25_29,m_age30_34,m_age35_39,m_age40_44,m_age45_49,m_age50_54,
+                       m_age55_59,m_age60_64,m_age65_69,m_age70_74,m_age75_79,m_age80_84,
+                       m_age85_89,m_age90_94,m_age95_99,m_age100_,f_age0_4,f_age5_9,
+                       f_age10_14,f_age15_19,f_age20_24,f_age25_29,f_age30_34,f_age35_39,
+                       f_age40_44,f_age45_49,f_age50_54,f_age55_59,f_age60_64,f_age65_69,
+                       f_age70_74,f_age75_79,f_age80_84,f_age85_89,f_age90_94,f_age95_99,f_age100_)]
+    max_length_str=c('Admin1','Male','Female','male 0-4','male 5-9','male 10-14','male 15-19',
+                     'male 20-24','male 25-29','male 30-34','male 35-39','male 40-44',
+                     'male 45-49','male 50-54','male 55-59','male 60-64','male 65-69',
+                     'male 70-74','male 75-79','male 80-84','male 85-89','male 90-94',
+                     'male 95-99','male 100+','female 0-4','female 5-9','female 10-14',
+                     'female 15-19','female 20-24','female 25-29','female 30-34',
+                     'female 35-39','female 40-44','female 45-49','female 50-54',
+                     'female 55-59','female 60-64','female 65-69','female 70-74',
+                     'female 75-79','female 80-84','female 85-89','female 90-94',
+                     'female 95-99','female 100+')
     colnames(extracted)=max_length_str[1:dim(extracted)[2]]
     
     return(list(extracted,contain_1))
@@ -290,7 +344,7 @@ extract_level1=function(data1,contain_1){
     return(list(data1,contain_1))
   }}
 
-
+# follow the decision tree in 'summary of HDX collector.pptx'
 judge_each_DT=function(address){
   sheet_names=excel_sheets(address)
   
@@ -312,7 +366,7 @@ judge_each_DT=function(address){
   }
   
   if(contain_2!=0){
-    print('This data has level 2 sex/age data')
+    print('This data HAS LEVEL 2 sex/age data')
     return(extracted)}
   
   ###
@@ -323,7 +377,7 @@ judge_each_DT=function(address){
   }
   
   if(contain_1!=0){
-    print('This data has level 1 sex/age data')
+    print('This data HAS LEVEL 1 sex/age data')
     return(extracted)}
   
   return('This data has no disaggregated data')
@@ -331,15 +385,18 @@ judge_each_DT=function(address){
 
 
 
-############ save all uniformly-format data
+############ save all uniformly-format data in a folder 'uniform'
+# create a list that record all countries finished at current stage
+final_list=c()
 for (i in 1:dim(directory_unique)[1]){
   print(paste0('processing',directory_unique[i,'location']))
   answer=judge_each_DT(directory_unique[i,'location'])
   if (class(answer)!='character'){
   write.csv(answer,paste0(working_directory,'uniform/',directory_unique[i,'country'],
                           '_',directory_unique[i,'year'],'.csv'))
+  # record all true valid country in a dataframe
+  final_list=c(final_list,directory_unique[i,'country'])
   }
 }
-
 
 
