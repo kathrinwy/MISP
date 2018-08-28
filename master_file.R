@@ -39,21 +39,23 @@ source("survey_hh_extract_dhs.R")
 source("survey_hh_extract_mics.R")
 # Downloads the relevant household members dataset and estimates percentages 
 # per 5 year age groups and region (i. e. % of 0-4 living in region 1, etc.)
+# add column of percentage of women of reproductive age in region 1
 
-source("wpp.R")
+source("wpp1.R")
 # downloads datafile for men and women for total populations by age (single year age groups)
 # and combines 'estimates' and 'medium' projections in one sheet to include years beyond 2015
-
-source("wpp_extract.R")
-# extracts national population per 5 year age groups for the year that matches the latest household survey
+# extracts national population per 5 year age groups and sex for the year
+# that matches the latest household survey
 
 source("combine_wpp_survey.R")
-# multiply outcome of survey_extract with wpp_extract to obtain share of WRA by Admin level 1 and 
+# multiply outcome of survey_extract with wpp_extract to obtain  
 # total population by Admin level 1
+
 
 # 3. Iteration
 
-# This step consists in using wpp_extract output
+source("wpp2.R")
+# Extracts 1 year age groups by sex, for current year
 
 # Fertiltiy indicators --------------------------------------------------------------------------
 
@@ -105,7 +107,8 @@ source("wcu_collector.R")
 source("wcu_extract.R")
 # extract modern contraceptive use by country for the current years
 
-# Combine output ----------------------------------------------------------
+
+# Combine output --------------------------------------------------------------------------------
 
 source("combine_add_export.R")
 # Combines output and 
