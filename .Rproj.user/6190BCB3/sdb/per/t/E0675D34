@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "\n# Install and load packages -----------------------------------------------\n\n#install.packages( \"devtools\" , repos = \"http://cran.rstudio.com/\" )\n#install_github( \"ajdamico/lodown\" , dependencies = TRUE )\n#install.packages(\"digest\")\n#install.packages( \"convey\" , repos = \"http://cran.rstudio.com/\" )\n#install.packages( \"srvyr\" , repos = \"http://cran.rstudio.com/\" )\n\nlibrary(devtools)\nlibrary(srvyr)\nlibrary(lodown)\nlibrary(convey)\nlibrary(dplyr)\nlibrary(magrittr)\nlibrary(tidyverse)\nlibrary(survey)\nlibrary(foreign)\nlibrary(reshape2)\nlibrary(data.table)\nlibrary(ggplot2)\nlibrary(lme4)\nlibrary(geepack)\nlibrary(gridExtra)\nlibrary(lattice)\nlibrary(sjstats)\nlibrary(TMB)\nlibrary(readr)\n\nsetwd(\"C:/Users/weny/Google Drive/2018/Humanitarian/MISP/\")\n\n# Executive statements ----------------------------------------------------\n\n# run over night, currently scopes through all years countries but we only need latest\n# downloads all but Nepal for which a special permission was needed\n\nlodown( \"dhs\" , output_dir = file.path( path.expand( \"~\" ) , \"surveys\" ) , \n        your_email = \"weny@unfpa.org\" , \n        your_password = \"Ichbininny123!\" , \n        your_project = \"Minimum Initial Service Package\" )\n\n# Source: http://asdfree.com/demographic-and-health-surveys-dhs.html\n\n# MICS --------------------------------------------------------------------\n\n# lodown scraper not finalized: https://github.com/ajdamico/lodown/blob/master/R/mics.R\n\n# Select latest year ------------------------------------------------------\n\n# Create dataframe with available DHS, including year\n\ndhs <- as.data.frame(matrix(NA, nrow = 0, ncol = 3))\n\nfor(country in country_list){\n \n  tmp             <- as.data.frame(as.character(list.dirs(path = paste(\"C:/Users/weny/Documents/DHS/\", country, sep = \"\"),\n                                                    recursive = F)))\n  if(nrow(tmp) > 0){ # if there is any data for a country\n    \n  names(tmp)      <- \"link\"\n  \n  tmp$year        <- substr(tmp$link, (nchar(as.character(tmp$link)) + 1)-2, nchar(as.character(tmp$link))) # due to inconsistent formatting, only last 2 digits can be used to recreate year\n  \n  tmp$year_latest <- ifelse(tmp$year > 80, paste(19, tmp$year, sep = \"\"), paste(20,tmp$year, sep = \"\")) # reconstruct full year\n                       \n  tmp$country     <- country\n  \n  tmp$survey      <- \"dhs\"\n  \n  tmp <- tmp %>%\n         select(c(\"country\", \"year_latest\", \"survey\"))\n  \n  dhs <- rbind(dhs, tmp) # append to full dataset\n  \n  } \n}\n\n# Import the data catalogue from MICS and add to data availability from DHS\n\nmics <- read_csv(\"C:/Users/weny/Google Drive/2018/Humanitarian/MISP/MISP-Rproject/surveys_catalogue_mics.csv\") %>%\n        filter(status == \"Completed\" & datasets == \"Available\") %>%\n        select(c(\"country\", \"year\")) %>%\n        mutate(survey = \"mics\")\n\nmics$year_latest <- substr(mics$year, (nchar(as.character(mics$year)) + 1)-4, nchar(as.character(mics$year)))\n\nmics <- mics %>%\n  select(-year)\n\ndata_availability <- rbind(dhs, mics)\n\n# group by country and then select max\n\nlatest_dataset <- data_availability %>%\n                  group_by(country) %>%\n                  slice(which.max(year_latest))\n \n# surveys to be downloaded manually ---------------------------------------\n\nmics_latest <- latest_dataset %>%\n               filter(survey == \"mics\")\n\ndhs_latest  <- latest_dataset %>%\n              filter(survey == \"dhs\")\n\n\n\n\n\n",
+    "created" : 1534406106830.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2850721889",
+    "id" : "E0675D34",
+    "lastKnownWriteTime" : 1533244244,
+    "last_content_update" : 1533244244,
+    "path" : "C:/Users/weny/Google Drive/2018/Humanitarian/MISP/MISP-Rproject/Survey collector.R",
+    "project_path" : "Survey collector.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

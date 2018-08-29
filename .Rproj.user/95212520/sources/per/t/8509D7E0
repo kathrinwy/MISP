@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1531843599601.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1739970293",
+    "id" : "8509D7E0",
+    "lastKnownWriteTime" : 1531844686,
+    "last_content_update" : 1531844686490,
+    "path" : "C:/Users/Kathrin Weny/Google Drive/2018/Humanitarian/MISP/MISP-Rproject/FPindicators.R",
+    "project_path" : "FPindicators.R",
+    "properties" : {
+        "cursorPosition" : "37,71",
+        "scrollLine" : "18"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

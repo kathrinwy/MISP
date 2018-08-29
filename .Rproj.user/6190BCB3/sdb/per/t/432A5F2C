@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "### This code will estimate subnational popualtion by age and sex with WPP and household survey data for Burkina Faso in 2014 ###\n\n\n# Notes -------------------------------------------------------------------\n\n# Note that FP indicators come from the individual women dataset, \n# the age strcutre form the household members dataset. FP indicators, ALWAYS have to be\n# calculated, age/sex structure only if no COD-PS, IPUMS extract etc. is available \n\n# Set up ------------------------------------------------------------------\n\nrm(list = ls())\n\nlibrary(dplyr)\nlibrary(magrittr)\nlibrary(tidyverse)\nlibrary(survey)\nlibrary(foreign)\nlibrary(data.table)\nlibrary(ggplot2)\nlibrary(reshape2)\nlibrary(readr)\nlibrary(xlsx)\n\noptions(scipen = 999)  # disable scientific notation in R\n\noptions(survey.lonely.psu = \"adjust\")\n\nsetwd(\"C:/Users/Kathrin Weny/Documents/\")\n\n\nfor(country in country_list){\n\n\n# DHS ---------------------------------------------------------------------\n\n\nif(survey == \"dhs\"){\n  \n# Read in survey data -----------------------------------------------------\n\nraw_data          <- read.spss(\"./Household survey data/BFIR62FL.SAV\", to.data.frame = TRUE) \n\nraw_data <- raw_data %>%\n  select(c(\"V005\", \"V021\",\"V022\", \"V024\", \n           \"V312\", \"V313\")) %>%\n  mutate(id = 1)\n\n# Bring in complex survey format ------------------------------------------\n\nsurvey <- svydesign(id      = raw_data$V021,         # Primary sampling\n                    strata  = raw_data$V022,         # Strata used for standard errors\n                    weights = raw_data$V005/1000000, # HH sample weight\n                    data    = raw_data)               # Data\n\n\n\n# Method mix --------------------------------------------------------------\n\n\n# national level\nsvymean(~V312, survey)\n\n\n# estimate share of sex/age groups by region\noutput <- as.data.frame(svyby(~V312, ~V024,  survey, svymean))\n\noutput <- output[2:19]\n\nnames(output) <- substring(names(output), 5)\n\nwrite.xlsx(WRA, \"./Results/method_mix.xlsx\")\n\n\n\n# Type of method ----------------------------------------------------------\n\n\n# national level\nsvymean(~V313, survey)\n\n\n# estimate share of sex/age groups by region\noutput <- as.data.frame(svyby(~V313, ~V024,  survey, svymean))\n\noutput <- output[2:5]\n\nnames(output) <- substring(names(output), 5)\n\nwrite.xlsx(WRA, \"./Results/type_of_FP_method.xlsx\")\n\n\n# Sex and age structure at Admin1 -----------------------------------------\n\n\n}\n\n\n\n# MICS --------------------------------------------------------------------\n\n\nif(survey == \"mics\"){\n  \n  \n  \n }\n}",
+    "created" : 1534406553269.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3594732516",
+    "id" : "432A5F2C",
+    "lastKnownWriteTime" : 1533308971,
+    "last_content_update" : 1533308971,
+    "path" : "C:/Users/weny/Google Drive/2018/Humanitarian/MISP/MISP-Rproject/fp_estimates/FPindicators.R",
+    "project_path" : "fp_estimates/FPindicators.R",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

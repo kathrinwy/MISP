@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1531962976124.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D6717618",
+    "lastKnownWriteTime" : 1531947947,
+    "last_content_update" : 1531963225746,
+    "path" : "C:/Users/Kathrin Weny/Google Drive/2018/Humanitarian/MISP/MISP-Rproject/Demographics.R",
+    "project_path" : "Demographics.R",
+    "properties" : {
+        "cursorPosition" : "35,184",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

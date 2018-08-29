@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "install.packages( \"devtools\" , repos = \"http://cran.rstudio.com/\" )\nlibrary(devtools)\ninstall_github( \"ajdamico/lodown\" , dependencies = TRUE )\ninstall.packages(\"digest\")\ninstall.packages( \"convey\" , repos = \"http://cran.rstudio.com/\" )\n\n\n\n\nlibrary(lodown)\nlibrary(convey)\nlodown( \"dhs\" , output_dir = file.path( path.expand( \"~\" ) , \"DHS\" ) , \n        your_email = \"weny@unfpa.org\" , \n        your_password = \"Ichbininny123!\" , \n        your_project = \"FGM survival analysis\" )",
+    "created" : 1533112878152.000,
+    "dirty" : true,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "2614958015",
+    "id" : "1CB2CD58",
+    "lastKnownWriteTime" : 29555362185347104,
+    "last_content_update" : 1533115071512,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
