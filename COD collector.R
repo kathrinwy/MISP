@@ -4,7 +4,7 @@ library(stringr)
 options(warn=-1)
 
 # where to save the downloads, this is the only thing to set up
-working_directory="E:/File/Pennsylvania/UNFPA/"
+working_directory="C:/Users/weny/Google Drive/2018/Humanitarian/MISP/MISP-Rproject/"
 
 # define a function that 'clean country name'(ccn), e.g. ccn("Côte d'Ivoire")='Cote d Ivoire'
 ccn=function(string){
@@ -123,7 +123,7 @@ while (page_empty==0){
               all_address=c(all_address,paste0("https://data.humdata.org",address0[i]))
               address_curr=paste0(working_directory,'data/',loc,'_',clean_date,'.',style)
               all_local_address=c(all_local_address,address_curr)
-              #download.file(addr,quiet = 1,destfile = address_curr,mode = "wb")
+              download.file(addr,quiet = 1,destfile = address_curr,mode = "wb")
             }
           }
         }
@@ -144,7 +144,7 @@ as_date=function(string){
   # we assume the date is like Sep 01,2011
   temp=strsplit(string,',| ')[[1]]
   year=temp[4]
-  day=temp[2]
+  day=temp[2]pdb.Office-2018
   month=match(temp[1],c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'))
   return(as.POSIXct(paste0(year,'/',month,'/',day)))
 }

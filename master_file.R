@@ -64,7 +64,7 @@ source("wpp2.R")
 ####    Decision-tree:
 ####
 ####    1. Iteration: Latest household survey (AB1)
-####                 ->  2. Iteration: World contraceptive use (AB0)
+####                 ->  2. Iteration: World population prospect (AB0)
 ####
 ####---------------------------------------------------------------------------------------------
 
@@ -88,8 +88,8 @@ source("wcu_cbr_extract.R")
 ####
 ####    Decision-tree:
 ####
-####    1. Iteration: Latest household survey
-####                 ->  2. Iteration: World contraceptive use
+####    1. Iteration: Latest household survey (AB1)
+####                 ->  2. Iteration: World contraceptive use (AB0)
 ####
 ####---------------------------------------------------------------------------------------------
 
